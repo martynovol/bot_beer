@@ -1,0 +1,26 @@
+import emoji
+
+em_report_close = emoji.emojize(":fax_machine:")
+em_report_for_month = emoji.emojize(":chart_increasing:")
+em_report_for_day = emoji.emojize(":card_file_box:")
+em_my_salary = emoji.emojize(":dollar_banknote:")
+em_report_for_diap = emoji.emojize(":calendar:")
+em_last_report = emoji.emojize(":clipboard:")
+
+em_report_load_cass = emoji.emojize(":office_worker:")
+em_report_load_store = emoji.emojize(":convenience_store:")
+em_report_load_date = emoji.emojize(":spiral_calendar:")
+em_report_load_cash = emoji.emojize(":yen_banknote:")
+em_report_load_non_cash = emoji.emojize(":credit_card:")
+em_report_load_transfers = emoji.emojize(":money_with_wings:")
+em_report_load_total = emoji.emojize(":money_bag:")
+em_report_load_in_box = emoji.emojize(":abacus:")
+em_report_load_in_vault = emoji.emojize(":file_cabinet:")
+em_report_load_expenses = emoji.emojize(":receipt:")
+em_report_load_photo = emoji.emojize(":camera:")
+em_report_load_comments = emoji.emojize(":memo:")
+em_report_load_zamena = "🔁"
+em_fine_button = emoji.emojize(":passport_control:")
+em_salary_button = emoji.emojize(":receipt:")
+em_main_active = emoji.emojize(":red_circle:")
+em_help = emoji.emojize(":SOS_button:")

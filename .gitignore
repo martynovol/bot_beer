@@ -1,0 +1,19 @@
+# Folders
+.idea/*
+out/*
+
+# Files
+*.class
+
+#database
+*.db
+
+__pycache__
+
+#TOken
+id
+
+#token
+token.py
+Bot.pdf
+ОПУ_761694862_01_2024.xlsx

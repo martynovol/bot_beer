@@ -35,7 +35,7 @@ def sql_start():
         'TEXT, day TEXT, month TEXT, year TEXT, sum_invoices TEXT, photo_invoices TEXT)')
     base.execute(
         'CREATE TABLE IF NOT EXISTS shops(id TEXT, name_point TEXT, work_hours_start TEXT, work_hours_finish TEXT, '
-        'difference_time TEXT, id_sklad TEXT)')
+        'difference_time TEXT, id_sklad TEXT, url_api TEXT)')
     #base.execute('CREATE TABLE IF NOT EXISTS temp(id TEXT, temp_value TEXT)')
     base.execute('CREATE TABLE IF NOT EXISTS payments(id TEXT, person TEXT, date1 TEXT, month TEXT, year TEXT, '
                  'payment TEXT, date2 TEXT)')
@@ -181,7 +181,8 @@ async def sql_add_point(state):
     async with state.proxy() as data:
         data2 = list(data.values())
         data2.append("")
-        cur.execute('INSERT INTO shops VALUES (?,?,?,?,?,?)', data2)
+        data2.append("")
+        cur.execute('INSERT INTO shops VALUES (?,?,?,?,?,?,?)', data2)
         base.commit()
 
 

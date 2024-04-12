@@ -40,8 +40,8 @@ class FSMTable(StatesGroup):
 table_url_stocks = 'https://docs.google.com/spreadsheets/d/10Yh05RDAHJCIGVhKRd_ITDv9hXDDdXt1slpI6su57io/edit?usp=sharing'
 try:
     CREDENTIALS_FILE = 'handlers/admin_func/creds.json'
-    spreadsheet_id = '1jeB3JZQywcsF8BU0Ge_YqrhPNM7qFuyEknKctIMka1w'
-    table_url = 'https://docs.google.com/spreadsheets/d/1jeB3JZQywcsF8BU0Ge_YqrhPNM7qFuyEknKctIMka1w/edit?usp=sharing'
+    spreadsheet_id = '1A5IpfMi5J1--31YfsU76It6H6eSyT-P93wB9v-fDXTM'
+    table_url = 'https://docs.google.com/spreadsheets/d/1A5IpfMi5J1--31YfsU76It6H6eSyT-P93wB9v-fDXTM/edit?usp=sharing'
 
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
         CREDENTIALS_FILE,
@@ -354,7 +354,7 @@ def upload_table_salary(month, year):
 
 
 async def get_url_table(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, f'{table_url}\n\n{table_url_stocks}')
+    await bot.send_message(message.from_user.id, f'{table_url}')
 
 
 def register_handlers_table(dp: Dispatcher):

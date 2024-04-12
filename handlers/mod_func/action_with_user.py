@@ -96,7 +96,7 @@ async def set_new_user_name(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['name'] = message.text
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add('Модератор').insert('Администратор').row('Кассир').insert('Кладовщик').row("Водитель").insert("Оператор")
+    keyboard.add('Модератор').insert('Администратор').row('Кассир')
     await FSMNew_user.next()
     await bot.send_message(message.from_user.id, 'Выберите привилегию пользователя', reply_markup=keyboard)
 

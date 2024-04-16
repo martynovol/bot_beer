@@ -365,19 +365,17 @@ async def load_comments(message: types.Message, state: FSMContext):
                 f"В кассе: {data['in_box']}\nВ сейфе: {data['in_vault']}\nРасходы: {data['expenses']}\nКомментарии: {data['comments']} "
         date1, person, point = data['date'], data['person'], data['point']
         data['id'] = sqlite_db.generate_random_string()
+        
         try:
             d = data['date'].split('.')
-            date_store = f"{d[2]}-{d[1]}-{d[0]}"
-            url_store = f"https://api.moysklad.ru/api/remap/1.2/entity/retailstore/{inf.get_id_sklad_point(data['point'])}"
-            url_get_retail = f"https://api.moysklad.ru/api/remap/1.2/entity/retailshift?filter=moment>{date_store} 5:00:00;retailStore={url_store}"
-            response = requests.get(url_get_retail, headers=token.headers)
-            data_store = json.loads(response.text)
-
+            cash, non_cash = get_total_day(data['point'], f"{d[2]}-{d[1]}-{d[0]}")
+                
         except Exception:
-            pass
+            cash, non_cash = None, None
     await sqlite_db.sql_add_command(state)
 
     async with state.proxy() as data:
+        point_name = data['point']
         for ret in sqlite_db.cur.execute('SELECT id FROM menu WHERE date1 LIKE ? AND point1 LIKE ?',
                                          [data['date'], data['point']]):
             id1 = ret[0]
@@ -402,20 +400,19 @@ async def load_comments(message: types.Message, state: FSMContext):
             await bot.send_message(message.from_user.id, f"Отчёт отправлен. Хорошего вечера!",
                                    reply_markup=inf.kb(message.from_user.id))
         id_report = data['id']
-        if "rows" not in data_store:
-            await sqlite_db.info_admin(message.from_user.id, f"⚠️⚠️⚠️Не выгрузилось с моего склада {data}")
-        elif len(data_store["rows"]) > 1:
-            await sqlite_db.info_admin(message.from_user.id, f"⚠️⚠️⚠️Выгрузилось несколько смен с моего склада {data}")
+
+        total_b = float(data['non_cash'].split(' ')[1]) + float(data['non_cash'].split(' ')[2]) + float(data['non_cash'].split(' ')[0])
+        if cash is None:
+            for _id in admins:
+                await bot.send_message(_id, f"⚠️Не получилось связаться с Контуром.")
         else:
-            for store in data_store["rows"]:
-                cash, non_cash = store["proceedsCash"] / 100, store["proceedsNoCash"] / 100
-            total_b = float(data['non_cash'].split(' ')[1]) + float(data['non_cash'].split(' ')[2]) + float(data['non_cash'].split(' ')[0])
             if (data['cash'] + data['transfers'] != cash) or (total_b != non_cash):
                 for _id in admins:
-                    await bot.send_message(_id, f"⚠️Выручка {data['point']} не сошлась с моим складом {data['date']} (Мой Склад/Бот)\nБезналичные: {non_cash}/{total_b}\nНаличные: {cash}/{(data['cash'] + data['transfers'])}")
+                    await bot.send_message(_id, f"⚠️Выручка {data['point']} не сошлась с Контуром {data['date']} (Контур/Бот)\nБезналичные: {non_cash}/{total_b}\nНаличные: {cash}/{(data['cash'] + data['transfers'])}")
             else:
                 for _id in admins:
-                    await bot.send_message(_id, f"Выручка сошлась с моим складом")
+                    await bot.send_message(_id, f"Выручка {data['point']} сошлась с Контуром")
+            
         for _id in admins:
             if message.from_user.id != _id:
                 keyboards = InlineKeyboardMarkup().add(
@@ -435,10 +432,10 @@ async def load_comments(message: types.Message, state: FSMContext):
             if last_box != -1:
                 cassa_now = float(data['cash']) + last_box - float(data['expenses'])
                 if round(cassa_now) == round(float(data['in_box']) + float(data['in_vault'])):
-                    await bot.send_message(_id, f'Наличность на точке сошлась c открытием смены')
+                    await bot.send_message(_id, f'Наличность {point_name} сошлась c открытием смены')
                 else:
                     u = cassa_now - float(data['in_box']) - float(data['in_vault'])
-                    await bot.send_message(_id, f'⚠️ Наличность на точке не сходится с открытием смены на {round(u, 2)} рублей')
+                    await bot.send_message(_id, f'⚠️ Наличность {point_name} не сходится с открытием смены на {round(u, 2)} рублей')
         await state.finish()
 
         open_time = "16:45 04.07.2023"
@@ -556,6 +553,31 @@ async def load_defects_photo(callback_query: types.CallbackQuery):
     media = types.MediaGroup()
     media.attach_photo(f'{photo}')
     await bot.send_media_group(callback_query.from_user.id, media=media)
+
+
+def get_total_day(store, date_open):
+    store_id, store_api = inf.get_id_sklad_point(store), inf.get_api_point(store)
+
+    if store_api and store_api:
+        url = f'{token.curl}/v1/shops/{store_id}/cheques'
+        params = {'useTime': True, 'dateFrom': f'{date_open} 00:10:00', 'dateTo': f'{date_open} 23:50:00'}
+        response = requests.get(url, headers={"x-kontur-apikey": store_api}, params=params)
+        totalSum = {'Card': 0, 'Cash': 0}
+
+        if response.status_code == 200:
+            data = response.json()
+            for cheq in data["items"]:
+                for payment in cheq["payments"]:
+                    totalSum[payment['type']] += float(payment['value'].replace(",", "."))
+            
+            return (totalSum['Cash'], totalSum['Card'])
+        
+        else:
+            return (None, None)
+    
+    else:
+        return 0, 0
+
 
 
 async def del_defect(callback_query: types.CallbackQuery):

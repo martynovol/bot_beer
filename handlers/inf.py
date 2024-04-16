@@ -533,6 +533,12 @@ def get_id_sklad_point(point_id_name):
         return ret[0]
 
 
+def get_api_point(point_id_name):
+    for ret in sqlite_db.cur.execute('SELECT url_api FROM shops WHERE id LIKE ? OR name_point LIKE ?',
+                                     [point_id_name, point_id_name]):
+        return ret[0]
+
+
 def get_now_salary(person, date_month_year):  # Получить последнюю ставку за прошлые месяцы
     result = 0
     date_month_year = datetime.strptime(date_month_year, '%m.%Y')

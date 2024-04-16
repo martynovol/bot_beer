@@ -85,12 +85,13 @@ async def read_excel_file(file_path, uid):
     wb = openpyxl.load_workbook(file_path)
     ws = wb.active
     result = {}
-    all_groups = await get_name_groups()
 
     for y in range(1, 1000, 4):
         sh = ws.cell(1, y).value
         if sh in store_names:
             result[sh] = {}
+            store_id, api_sklad = inf.get_id_sklad_point(sh), inf.get_api_point(sh)
+            all_groups = await get_name_groups(store_id, api_sklad)
             for x in range(3, 1000):
                 group = ws.cell(x, y).value
                 if group in all_groups.keys():
@@ -115,19 +116,15 @@ async def read_excel_file(file_path, uid):
     return result
 
 
-async def get_name_groups():
-    url_get_groups = "https://api.moysklad.ru/api/remap/1.2/entity/productfolder"
-    response = requests.get(url_get_groups, headers=token.headers)
-    data = json.loads(response.text)
+async def get_name_groups(store_id, api_sklad):
+    url = f'{token.curl}/v1/shops/{store_id}/product-groups'
+    response = requests.get(url, headers={"x-kontur-apikey": api_sklad})
+    data = response.json()
 
-    groups = {}
-    for group in data['rows']:
-        if group['name'] not in groups:
-            groups[group['name']] = [(group['id'], group['pathName'])]
-        else:
-            groups[group['name']].append((group['id'], group['pathName']))
+    for group in data['items']:
+        group.append((group['id'], group['name']))
 
-    return groups
+    return group
 
 
 async def cm_start_get_plans(message: types.Message):

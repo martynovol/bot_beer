@@ -25,10 +25,10 @@ from handlers import emoji_bot
 
 async def cm_start_plans_product(message: types.Message):
     await bot.send_message(message.from_user.id, "Пожалуйста, введите дату в формате 'ММ.ГГГГ' (например, '04.2024'):")
-    await bot.register_next_step_handler(message, process_date_step)
+    await bot.register_next_step_handler(message, process_date_step_product)
 
 
-async def process_date_step(message: types.Message):
+async def process_date_step_product(message: types.Message):
     date = message.text
     await bot.send_message(message.from_user.id, "Теперь загрузите Excel-файл с учётом продаж:")
     await bot.register_next_step_handler(message, process_excel_step, date)
@@ -50,6 +50,8 @@ async def process_excel_step(message: types.Message, date: str):
                     product_group = sheet.cell(row=row, column=column).value
                     if product_group:
                         sales_data[shop_name][product_group] = sheet.cell(row=row, column=column + 1).value
+        
+        
         print("Дата:", date)
         print("Учёт продаж:")
         print(sales_data)

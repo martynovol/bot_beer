@@ -32,12 +32,12 @@ async def menu_reports(message: types.Message):
     bp = KeyboardButton(f'Загрузка отчётов')
     bn = KeyboardButton(f'Выгрузка отчётов')
     bt = KeyboardButton(f'Задачи')
-    b5 = KeyboardButton(f'Списания')
+    #b5 = KeyboardButton(f'Списания')
     b6 = KeyboardButton(f'Планы продаж')
-    b7 = KeyboardButton(f'Ревизии')
+    #b7 = KeyboardButton(f'Ревизии')
     b9 = KeyboardButton(f'Инкассации')
     b8 = KeyboardButton('Вернуться')
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(bp).insert(bn).insert(bt).row(b5).insert(b6).insert(b7).row(b9).row(b8)
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(bp).insert(bn).insert(bt).insert(b6).row(b9).row(b8)
     await bot.send_message(message.from_user.id, 'Вы перешли в меню <<Отчёты>>', reply_markup=keyboard)
 
 

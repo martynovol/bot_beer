@@ -331,8 +331,9 @@ async def load_selfie_open(message: types.Message, state: FSMContext):
         sqlite_db.cur.execute('UPDATE reports_open SET problem_photos = ? WHERE problem_photos LIKE ?',
                               ['False', message.from_user.id])
         sqlite_db.base.commit()
-        cassa_kb = InlineKeyboardMarkup().add(InlineKeyboardButton(f"Да", callback_data=f"cass_law_yes ")).insert(InlineKeyboardButton(f"Нет", callback_data=f"cass_law_no "))
-        await bot.send_message(message.from_user.id, f"Сходится ли фактическая наличность в кассе с 'Мой Склад'?", reply_markup=cassa_kb)
+        agree_kb = InlineKeyboardMarkup().add(InlineKeyboardButton(f"Да", callback_data=f"next_law ")).insert(InlineKeyboardButton(f"Нет", callback_data=f"show_law "))
+        await bot.send_message(message.from_user.id, f"Вы знаете о том, что продажа алкогольных напитков и табачных изделий лицам, не достигшим 18 лет, строго запрещена?", reply_markup=agree_kb)
+
     #await FSMremind_law.know_law.set()
     close_time = "00:00"
     for ret in sqlite_db.cur.execute("SELECT work_hours_finish FROM shops WHERE name_point LIKE ?", [point]):
@@ -351,14 +352,14 @@ async def show_law(callback_query: types.CallbackQuery):
     await bot.edit_message_reply_markup(chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id, reply_markup=next_kb )
 
 async def next_law(callback_query: types.CallbackQuery):
-    await bot.edit_message_text(chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id, text = "Так же обращаем Ваше внимание, что продажа кальянов и устройств для потребления никотина содержащей продукции так же СТРОГО ЗАПРЕЩЕНА лицам до 18 лет. Продажа 18+ осуществляется только НА СЛЕДУЮЩИЙ ДЕНЬ ПОСЛЕ ДНЯ РОЖДЕНИЯ. В день рождения продавать нельзя!!!🚫\n\nОснование фз рф от 23.02.2013 номер 15/ фз от 10.07.2001 номер 87")
+    await bot.edit_message_text(chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id, text = "Так же обращаем Ваше внимание, что продажа 18+ осуществляется только НА СЛЕДУЮЩИЙ ДЕНЬ ПОСЛЕ ДНЯ РОЖДЕНИЯ. В день рождения продавать нельзя!!!🚫\n\nОснование фз рф от 23.02.2013 номер 15/ фз от 10.07.2001 номер 87")
     await asyncio.sleep(6)
     next_kb = InlineKeyboardMarkup().add(InlineKeyboardButton("Ознакомился, обязаусь соблюдать",  callback_data=f"finish_law "))
     await bot.edit_message_reply_markup(chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id, reply_markup=next_kb )
 
 
 async def finish_law(callback_query: types.CallbackQuery):
-    await bot.edit_message_text(chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id, text = "Обращаем ваше внимание‼️ Что при внутренней проверке на продажу лицам не достигшим 18 лет - назначается штраф в размере 30 000. Просим быть предельно внимательными!")
+    await bot.edit_message_text(chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id, text = "Обращаем ваше внимание‼️ Что при внутренней проверке на продажу лицам не достигшим 18 лет - назначается штраф. Просим быть предельно внимательными!")
     await asyncio.sleep(3)
     next_kb = InlineKeyboardMarkup().add(InlineKeyboardButton("Ознакомился, обязаусь соблюдать",  callback_data=f"finish_law2 "))
     await bot.edit_message_reply_markup(chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id, reply_markup=next_kb )
@@ -366,7 +367,7 @@ async def finish_law(callback_query: types.CallbackQuery):
 
 async def finish_law2(callback_query: types.CallbackQuery):
     await bot.delete_message(chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
-    await bot.send_message(callback_query.from_user.id, f"⚠️Внимание! Необходимо произвести локальную ревизию на точку, при помощи кнопки 'Локальная ревизия'.\nРевизия должна быть проведена до 15:00")
+    #await bot.send_message(callback_query.from_user.id, f"⚠️Внимание! Необходимо произвести локальную ревизию на точку, при помощи кнопки 'Локальная ревизия'.\nРевизия должна быть проведена до 15:00")
     await bot.send_message(callback_query.from_user.id, "Смена успешно открыта. Удачного дня!", reply_markup=inf.kb(callback_query.from_user.id))
 
 async def remind_revision(id1, close_time):
@@ -483,8 +484,10 @@ async def finish_report_open(callback_query: types.CallbackQuery):
     sqlite_db.base.commit()
     #agree_kb = InlineKeyboardMarkup().add(InlineKeyboardButton(f"Да", callback_data=f"next_law ")).insert(InlineKeyboardButton(f"Нет", callback_data=f"show_law "))
     #await bot.send_message(callback_query.from_user.id, f"Вы знаете о том, что продажа алкогольных напитков и табачных изделий лицам, не достигшим 18 лет, строго запрещена?", reply_markup=agree_kb)
-    cassa_kb = InlineKeyboardMarkup().add(InlineKeyboardButton(f"Да", callback_data=f"cass_law_yes ")).insert(InlineKeyboardButton(f"Нет", callback_data=f"cass_law_no "))
-    await bot.send_message(callback_query.from_user.id, f"Сходится ли фактическая наличность в кассе с 'Мой Склад'?", reply_markup=cassa_kb)
+    await bot.delete_message(chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
+    agree_kb = InlineKeyboardMarkup().add(InlineKeyboardButton(f"Да", callback_data=f"next_law ")).insert(InlineKeyboardButton(f"Нет", callback_data=f"show_law "))
+    await bot.send_message(callback_query.from_user.id, f"Вы знаете о том, что продажа алкогольных напитков и табачных изделий лицам, не достигшим 18 лет, строго запрещена?", reply_markup=agree_kb)
+
 
 
 async def online_cassa_yes(callback_query: types.CallbackQuery):
@@ -564,8 +567,10 @@ async def finish_problem(message: types.Message, state: FSMContext):
                 await bot.send_message(_id, f'На точке {point} обнаружены проблемы. Продавец: {person}', reply_markup=keyboard)
             except Exception:
                 pass
-        await bot.send_message(message.from_user.id, f'Администраторы будут уведомлены о проблеме.',
-                               reply_markup=inf.kb(message.from_user.id))
+        await bot.send_message(message.from_user.id, f'Администраторы будут уведомлены о проблеме.')
+        agree_kb = InlineKeyboardMarkup().add(InlineKeyboardButton(f"Да", callback_data=f"next_law ")).insert(InlineKeyboardButton(f"Нет", callback_data=f"show_law "))
+        await bot.send_message(message.from_user.id, f"Вы знаете о том, что продажа алкогольных напитков и табачных изделий лицам, не достигшим 18 лет, строго запрещена?", reply_markup=agree_kb)
+
 
 
 

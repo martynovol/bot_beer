@@ -100,7 +100,6 @@ async def load_data3(message: types.Message, state: FSMContext):
                f'Удержано в счёт ревизии: {result["revision"]} руб.\n' \
                f'Штрафы: {result["fines"]} руб.\n' \
                f'Опоздания: {result["late"]} руб.\n' \
-               f'Взято в счёт зарплаты: {result["user_loss"]} руб. (Скидка: {result["disc_user"]}%)\n' \
                f'Без учёта премии и штрафов: {result["without"]} руб.\n' \
                f'Итог: {result["total_sum"]} руб.' \
                f'\n--------------------------------------------\n' \

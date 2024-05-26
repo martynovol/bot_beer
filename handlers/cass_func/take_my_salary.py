@@ -50,7 +50,6 @@ async def take_my_salary(message: types.Message):
            f'Удержано в счёт ревизии: {result["revision"]} руб.\n' \
            f'Депремирование: {result["fines"]} руб.\n' \
            f'Опоздания: {result["late"]} руб.\n' \
-           f'Взято в счёт зарплаты: {result["user_loss"]} руб. (Скидка: {result["disc_user"]}%)\n' \
            f'Без учёта премии и штрафов: {result["without"]} руб.\n' \
            f'Итог: {result["total_sum"] + inf.get_loss_user(user, month, year)} руб.' \
            f'\n--------------------------------------------\n' \
@@ -90,7 +89,6 @@ async def get_last_month_user_salary(callback_query: types.CallbackQuery):
            f'Удержано в счёт ревизии: {result["revision"]} руб.\n' \
            f'Депремирование: {result["fines"]} руб.\n' \
            f'Опоздания: {result["late"]} руб.\n' \
-           f'Взято в счёт зарплаты: {result["user_loss"]} руб. (Скидка: {result["disc_user"]}%)\n' \
            f'Без учёта премии и штрафов: {result["without"]} руб.\n' \
            f'Итог: {result["total_sum"]} руб.' \
            f'\n--------------------------------------------\n' \

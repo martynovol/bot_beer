@@ -484,7 +484,7 @@ async def finish_report_open(callback_query: types.CallbackQuery):
     sqlite_db.base.commit()
     #agree_kb = InlineKeyboardMarkup().add(InlineKeyboardButton(f"Да", callback_data=f"next_law ")).insert(InlineKeyboardButton(f"Нет", callback_data=f"show_law "))
     #await bot.send_message(callback_query.from_user.id, f"Вы знаете о том, что продажа алкогольных напитков и табачных изделий лицам, не достигшим 18 лет, строго запрещена?", reply_markup=agree_kb)
-    await bot.delete_message(chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
+    #await bot.delete_message(chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
     agree_kb = InlineKeyboardMarkup().add(InlineKeyboardButton(f"Да", callback_data=f"next_law ")).insert(InlineKeyboardButton(f"Нет", callback_data=f"show_law "))
     await bot.send_message(callback_query.from_user.id, f"Вы знаете о том, что продажа алкогольных напитков и табачных изделий лицам, не достигшим 18 лет, строго запрещена?", reply_markup=agree_kb)
 
